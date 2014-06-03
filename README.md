@@ -1,7 +1,7 @@
 #From Maven to Gradle with Docker in a multi-product pipeline
 
 [Presentation](http://gradlesummit.com/conference/santa_clara/2014/06/session?id=31615) for the 
-[Gradle Summit 2014](http://gradlesummit.com/conference/santa_clara/2014/06/session?id=31615)
+[Gradle Summit 2014](http://gradlesummit.com/conference/santa_clara/2014/06/home)
 
 [Slides](https://speakerdeck.com/gesellix/from-maven-to-gradle-with-docker-in-a-multi-product-pipeline)
 
