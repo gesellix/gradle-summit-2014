@@ -1,0 +1,633 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>From Maven to Gradle with Docker in a multi-product pipeline</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=792, user-scalable=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <link rel="stylesheet" href="shower/themes/gesellix/styles/screen.css">
+</head>
+<!--<body class="full">-->
+<body class="list">
+<header class="caption">
+    <h1>From Maven to Gradle with Docker in a multi-product pipeline</h1>
+
+    <h2><del>Shipping</del> Continuous Deployment made easy</h2>
+
+    <p>by <a target="_blank" href="http://www.gesellix.net/">Tobias Gesellchen</a>
+        @ <a target="_blank" href="http://www.hypoport.de/">Hypoport AG</a>
+    </p>
+</header>
+<section class="slide cover" id="cover">
+    <div>
+        <h2 class="text-shadow">From Maven to Gradle with Docker in a multi-product pipeline</h2>
+        <h3 class="text-shadow"><del>Shipping</del> Continuous Deployment made easy</h3>
+
+        <p class="text-shadow"><a target="_blank" href="http://www.gesellix.net/">by Tobias Gesellchen</a></p>
+        <!-- pictures/ship-shipping-ships.jpg from http://www.reddit.com/r/pics/comments/143rsy/a_ship_shipping_ships/ (http://i.imgur.com/29EcG.jpg) -->
+        <!--<img src="pictures/ship-shipping-ships.jpg" class="fill" alt="">-->
+        <!-- pictures/container-ship.jpg from https://www.flickr.com/photos/mikebaird/3898801499/ by Mike Baird (license: https://creativecommons.org/licenses/by/2.0/) -->
+        <!--<img src="pictures/container-ship.jpg" class="fill" alt="">-->
+        <!-- 5OctZbi8TOKC4NmbmeOH_Caroline%20Gutman-4677.jpg from https://s3.amazonaws.com/ooomf-com-files/5OctZbi8TOKC4NmbmeOH_Caroline%20Gutman-4677.jpg (http://unsplash.com/) -->
+        <img src="pictures/5OctZbi8TOKC4NmbmeOH_Caroline%20Gutman-4677.jpg" class="fill" alt="">
+
+        <div class="logos">
+            <img src="pictures/maven-logo.png" alt="" class="maven">
+            <img src="pictures/gradle-logo.png" alt="" class="gradle">
+            <img src="pictures/docker-logo.png" alt="" class="docker">
+        </div>
+        <style>
+            #cover img {
+                opacity: 0.2;
+                /*filter: alpha(opacity=20);*/
+            }
+
+            #cover h2 {
+                color: #FFF;
+                text-align: center;
+                font-size: 70px;
+                font-weight: bold;
+            }
+
+            #cover h3 {
+                color: #FFF;
+                text-align: center;
+                font-size: 25px;
+            }
+
+            #cover p {
+                margin: 10px 0 0;
+                text-align: center;
+                color: #FFF;
+                font-style: italic;
+                font-size: 20px;
+            }
+
+            #cover p {
+                color: #FFF;
+                position: absolute;
+                bottom: 10px;
+                right: 10px;
+            }
+
+            #cover p a {
+                color: #FFF;
+                text-decoration: none;
+            }
+
+            #cover .logos {
+                position: absolute;
+                bottom: 10px;
+                left: 10px;
+            }
+
+            #cover .logos img {
+                position: relative;
+                height: 50px;
+                padding: 10px;
+                vertical-align: middle;
+                opacity: 1;
+                background-color: rgba(150, 150, 150, 0);
+            }
+        </style>
+    </div>
+</section>
+
+<section class="slide" id="about">
+    <div>
+        <h2>About</h2>
+        <img src="pictures/gesellix.jpg" alt="" id="portrait">
+        <p>Tobias Gesellchen</p>
+        <ul id="about-details">
+            <li>software developer (Java, JavaScript, &hellip;)</li>
+            <li>employed at: <a href="http://blog-it.hypoport.de/" target="_blank">Hypoport AG</a></li>
+            <li>contact: <a href="https://twitter.com/gesellix" target="_blank">@gesellix</a></li>
+            <li>blog: <a href="http://www.gesellix.net/" target="_blank">gesellix.net</a></li>
+        </ul>
+
+        <style>
+            #about img#portrait {
+                width: 150px;
+                height: 150px;
+                float: right;
+            }
+        </style>
+    </div>
+</section>
+
+<section class="slide" id="agenda">
+    <div>
+        <h2>Agenda</h2>
+        <ol>
+            <li>
+                Migrating a Maven multi-module project
+                <ul>
+                    <li>experiences and solutions</li>
+                    <li>current state</li>
+                </ul>
+            </li>
+            <li>
+                Using Gradle and Docker for continuous deployment
+                <ul>
+                    <li>Docker?!</li>
+                    <li>continuous deployment</li>
+                </ul>
+            </li>
+        </ol>
+
+        <!-- hBd6EPoQT2C8VQYv65ys_White%20Sands.jpg from https://s3.amazonaws.com/ooomf-com-files/hBd6EPoQT2C8VQYv65ys_White%20Sands.jpg (http://unsplash.com/) -->
+        <img src="pictures/hBd6EPoQT2C8VQYv65ys_White%20Sands.jpg" alt=""/>
+        <style>
+            #agenda img {
+                opacity: 0.1;
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                width: 100%;
+            }
+        </style>
+    </div>
+</section>
+
+<section class="slide shout" id="part-1">
+    <div>
+        <h2>From Maven to Gradle</h2>
+    </div>
+</section>
+
+<section class="slide" id="maven-origin">
+    <div>
+        <h2>Origin: Maven multi-module project</h2>
+
+        <ul>
+            <li>~ 300 Maven pom.xml files</li>
+            <li>GWT frontends</li>
+            <li>AngularJS frontend</li>
+            <li>mixed JUnit and TestNG usage</li>
+            <li>"incremental" build with own plugin</li>
+            <li>some Maven specific hacks</li>
+        </ul>
+
+        <img src="pictures/maven-structure.jpg" alt="" class="maven-structure"/>
+
+        <style>
+            #maven-origin img.maven-structure {
+                position: absolute;
+                height: 100%;
+                right: 0;
+                top: 0;
+            }
+        </style>
+    </div>
+</section>
+
+<section class="slide" id="maven-migration">
+    <div>
+        <h2>From Maven to Gradle</h2>
+
+        <ul>
+            <li><a href="http://www.gradle.org/docs/current/userguide/build_init_plugin.html"
+                   target="_blank">build init plugin</a></li>
+            <li><a href="http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope"
+                   target="_blank">maven scope propagation and dependency fun</a></li>
+            <li><a href="https://github.com/spring-projects/gradle-plugins/tree/master/propdeps-plugin"
+                   target="_blank">propdeps plugin</a></li>
+            <li><a href="https://github.com/steffenschaefer/gwt-gradle-plugin"
+                   target="_blank">gwt gradle plugin</a></li>
+            <!-- sisyphos.jpg from http://www.thatblog.de/2008/02/05/was-wurde-sisyphos-tun/ (copyright Barbara Henninger http://www.cartooncommerz.de/aussteller/henniger.html, http://barbarahenniger.de/) -->
+            <li class="next">patience plugin <img src="pictures/sisyphos.jpg" alt="" class="sisyphos"/></li>
+        </ul>
+
+        <style>
+            #maven-migration img.sisyphos {
+                position: absolute;
+                bottom: 50px;
+                right: 50px;
+                z-index: 5;
+            }
+        </style>
+    </div>
+</section>
+
+<section class="slide cover" id="git-log">
+    <div>
+        <img src="pictures/maven-2-gradle-commits.jpg" alt="" class="maven-2-gradle-commits"/>
+    </div>
+</section>
+
+<section class="slide" id="dependency-management">
+    <div>
+        <h2>Dependency Management</h2>
+
+        <div class="problem">Using transitive dependencies is possible in Maven due to compile scope propagation.
+            <div><img src="pictures/dependency-mgmt.png" alt="" class="transitive_deps"/></div>
+        </div>
+        <div class="hint">Make your dependencies explicit! <p class="note">(it's generally better to know one's dependencies)</p>
+        </div>
+    </div>
+</section>
+
+<section class="slide" id="dependency-enforcement">
+    <div>
+        <h2>Dependency Enforcement</h2>
+            <pre>
+<code>def dependencyVersions <span style="color:#47b8d6">=</span> [
+    <span style="color:#ad9361">'javax.servlet:javax.servlet-api:3.0.1'</span>,
+    <span style="color:#ad9361">'log4j:log4j:1.2.17'</span>
+]
+
+configurations {
+    all<span style="color:#47b8d6">*</span><span style="color:#47b8d6">.</span>exclude <span style="color:#6782d3">module</span>: <span style="color:#ad9361">'jaxb-xjc'</span>
+    all<span style="color:#47b8d6">.</span>resolutionStrategy {
+        failOnVersionConflict()
+
+        force dependencyVersions<span style="color:#47b8d6">.</span>collect { it }
+
+        eachDependency { DependencyResolveDetails <span style="color:#c1c144">details</span> <span style="color:#47b8d6">-></span>
+            <span style="color:#6969fa;font-weight:700">if</span> (details<span style="color:#47b8d6">.</span>requested<span style="color:#47b8d6">.</span>group <span style="color:#47b8d6">==</span> <span style="color:#ad9361">'org.springframework'</span>) {
+                details<span style="color:#47b8d6">.</span>useVersion <span style="color:#ad9361">'3.2.4.RELEASE'</span>
+            }
+        }
+    }
+}
+</code>
+            </pre>
+    </div>
+</section>
+
+
+<section class="slide" id="shared-dependencies">
+    <div>
+        <h2>Shared dependencies</h2>
+        <!-- http://gradle.1045684.n5.nabble.com/Source-jar-on-classpath-for-GWT-td4666458.html -->
+            <pre>
+<code><span style="color:#555">// root build.gradle</span>
+subprojects {
+    ext<span style="color:#47b8d6">.</span>libraries <span style="color:#47b8d6">=</span> [
+        <span style="color:#6782d3">javax</span>: [
+            <span style="color:#6782d3">validation</span>: [
+                <span style="color:#ad9361">'javax.validation:validation-api:1.1.0.Final'</span>,
+                <span style="color:#ad9361">'javax.validation:validation-api:1.1.0.Final:sources'</span>
+            ]
+        ],
+        <span style="color:#6782d3">gwt</span>  : [
+            <span style="color:#6782d3">user</span>: dependencies<span style="color:#47b8d6">.</span>create(<span style="color:#ad9361">'com.google.gwt:gwt-user:2.6.0'</span>) {
+                transitive <span style="color:#47b8d6">=</span> <span style="color:#de8e30;font-weight:700">false</span>
+            }
+        ]
+    ]
+}
+
+<span style="color:#555">// child build.gradle</span>
+dependencies {
+    compile  libraries<span style="color:#47b8d6">.</span>javax<span style="color:#47b8d6">.</span>validation
+    provided libraries<span style="color:#47b8d6">.</span>gwt<span style="color:#47b8d6">.</span>user
+}
+</code>
+            </pre>
+    </div>
+</section>
+
+<section class="slide" id="provided-jar">
+    <div>
+        <h2>'provided' scope in jar modules</h2>
+
+        <div class="problem">Provided scope in Gradle only for projects with the 'war' plugin applied.</div>
+        <div class="hint">Use the propdeps plugin:
+            <div>Adds a custom 'provided' configuration</div>
+            <div class="link-github">
+                <a href="https://github.com/spring-projects/gradle-plugins/tree/master/propdeps-plugin" target="_blank">spring-projects/gradle-plugins</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="slide" id="gwt-plugin">
+    <div>
+        <h2>GWT (Google Web Toolkit)</h2>
+
+        <div class="problem">GWT needs to compile Java to browser-specific JavaScript code.</div>
+        <div class="hint">Use the GWT Gradle plugin:
+            <div>It just works, has good defaults, minimal config needed</div>
+            <div class="link-github">
+                <a href="https://github.com/steffenschaefer/gwt-gradle-plugin" target="_blank">steffenschaefer/gwt-gradle-plugin</a></div>
+        </div>
+<!--
+        <pre>
+<code>jar {
+    from sourceSets<span style="color:#47b8d6">.</span>main<span style="color:#47b8d6">.</span>allJava <span style="color:#555">//include sources for GWT compile</span>
+}</code>
+        </pre>
+-->
+    </div>
+</section>
+
+<section class="slide" id="groovy-compiler">
+    <div>
+        <h2>Groovy compiler only</h2>
+            <pre>
+<code>apply <span style="color:#6782d3">plugin</span>: <span style="color:#ad9361">'groovy'</span>
+
+sourceSets<span style="color:#47b8d6">.</span>main<span style="color:#47b8d6">.</span>java<span style="color:#47b8d6">.</span>srcDirs <span style="color:#47b8d6">=</span> []
+sourceSets<span style="color:#47b8d6">.</span>main<span style="color:#47b8d6">.</span>groovy<span style="color:#47b8d6">.</span>srcDirs <span style="color:#47b8d6">+</span><span style="color:#47b8d6">=</span> [<span style="color:#ad9361">"src/main/java"</span>]
+
+sourceSets<span style="color:#47b8d6">.</span>test<span style="color:#47b8d6">.</span>java<span style="color:#47b8d6">.</span>srcDirs <span style="color:#47b8d6">=</span> []
+sourceSets<span style="color:#47b8d6">.</span>test<span style="color:#47b8d6">.</span>groovy<span style="color:#47b8d6">.</span>srcDirs <span style="color:#47b8d6">+</span><span style="color:#47b8d6">=</span> [<span style="color:#ad9361">"src/test/java"</span>]
+</code>
+            </pre>
+    </div>
+</section>
+
+<section class="slide" id="test-and-testng-with-reports">
+    <div>
+        <h2>JUnit and TestNG with reports</h2>
+            <pre>
+<code>task testng(<span style="color:#6782d3">type</span>: Test) {
+    useTestNG()
+}
+test { }
+check<span style="color:#47b8d6">.</span>dependsOn testng
+
+task aggregateTestReports(<span style="color:#6782d3">type</span>: TestReport) {
+    destinationDir <span style="color:#47b8d6">=</span> test<span style="color:#47b8d6">.</span>reports<span style="color:#47b8d6">.</span>html<span style="color:#47b8d6">.</span>destination
+    reportOn test, testng
+}
+aggregateTestReports<span style="color:#47b8d6">.</span>mustRunAfter testng
+check<span style="color:#47b8d6">.</span>dependsOn aggregateTestReports
+
+tasks<span style="color:#47b8d6">.</span>withType(Test) {
+    systemProperty <span style="color:#ad9361">'db.url'</span>, System<span style="color:#47b8d6">.</span>getProperty(<span style="color:#ad9361">'db.url'</span>, <span style="color:#ad9361">'http://db.example.com/test'</span>)
+}
+</code>
+            </pre>
+    </div>
+</section>
+
+<!--
+<section class="slide" id="test-scope-dependency">
+    <div>
+        <h2>Use classes from test scope</h2>
+            <pre>
+<code>dependencies {
+  testCompile project(<span style="color:#ad9361">':another-module'</span>)<span style="color:#47b8d6">.</span>sourceSets<span style="color:#47b8d6">.</span>test<span style="color:#47b8d6">.</span>output
+}
+</code>
+            </pre>
+    </div>
+</section>
+-->
+
+<section class="slide" id="artifact-version">
+    <div>
+        <h2>Artifact version only for publishing</h2>
+            <pre>
+<code>publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            version <span style="color:#6969fa;font-weight:700">new</span> SimpleDateFormat(<span style="color:#ad9361">'yyyyMMddHHmmss'</span>)<span style="color:#47b8d6">.</span>format(<span style="color:#6969fa;font-weight:700">new</span> Date())
+            from components<span style="color:#47b8d6">.</span>java
+        }
+    }
+}</code>
+            </pre>
+    </div>
+</section>
+
+<section class="slide" id="current-state">
+    <div>
+        <h2>Current state</h2>
+
+        <ul>
+            <li>long evaluation phase, but same build time like Maven</li>
+            <li>incremental build on single CI server<br/>↪ multiple agents with shared Gradle cache?</li>
+            <li>IDE support not on Maven level</li>
+            <li>most frequently asked question: <a href="#why-gradle">&quot;Why Gradle?&quot;</a></li>
+            <li>Gradle tool of choice for new projects</li>
+        </ul>
+    </div>
+</section>
+
+<section class="slide shout" id="part-2">
+    <div>
+        <h2>Continuous deployment with Gradle</h2>
+    </div>
+</section>
+
+<section class="slide" id="deployment-pipeline">
+    <div>
+        <h2>Deployment Pipeline</h2>
+
+        <div><img src="pictures/deployment-pipeline.png" alt="" class="pipeline-overview"/></div>
+    </div>
+    <style>
+        img.pipeline-overview {
+            width: 85%;
+            margin-top: -25px;
+        }
+    </style>
+</section>
+
+<section class="slide" id="grunt-plugin">
+    <div>
+        <h2>Grunt</h2>
+
+        <div class="problem">Building a JavaScript frontend during the Gradle build.</div>
+        <div class="hint">Use the Gradle plugin for Grunt:
+            <div>Supports Gradle's incremental build via 'inputs' and 'outputs'</div>
+            <div class="link-github">
+                <a href="https://github.com/srs/gradle-grunt-plugin" target="_blank">srs/gradle-grunt-plugin</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="slide" id="e2e-tests">
+    <div>
+        <h2>Protractor e2e tests</h2>
+        <ul>
+            <li>run Selenium server (<a href="https://www.npmjs.org/package/selenium-server-standalone-jar" target="_blank">node module</a>)</li>
+            <li>run node reverse proxy (mocks external services)</li>
+            <li>run backend and frontend webapps</li>
+            <li>perform <a href="https://github.com/angular/protractor" target="_blank">Protractor</a> tests</li>
+        </ul>
+        <div class="hint">
+            no need for a dedicated plugin, Gradle allows execution of arbitrary commands
+        </div>
+    </div>
+</section>
+
+<section class="slide" id="contract-tests">
+    <div>
+        <h2>Consumer-driven contract tests</h2>
+        <ul>
+            <li>external service (provider) or equivalent stub is generally available</li>
+            <li>no explicit api or schema</li>
+            <li>perform consumer's <a href="http://martinfowler.com/articles/consumerDrivenContracts.html" target="_blank">contract tests</a> against external service</li>
+            <li>combination of all consumer-driven tests defines the contract</li>
+        </ul>
+        <!--<div class="hint">-->
+            <!--Gradle used to resolve desired version of tests-->
+        <!--</div>-->
+    </div>
+</section>
+
+<section class="slide" id="consumertests-dynamic-version">
+    <div>
+        <h2>Dynamically resolved dependency</h2>
+        <pre>
+<code>configurations {
+  consumertests
+}
+
+afterEvaluate {
+  <span style="color:#555">// TeamCity build artifact from publish build goal</span>
+  def appVersion <span style="color:#47b8d6">=</span> <span style="color:#6969fa;font-weight:700">new</span> File(<span
+            style="color:#ad9361">'version.txt'</span>)<span style="color:#47b8d6">.</span>text<span
+            style="color:#47b8d6">.</span>trim()
+
+  def consumertestDep <span style="color:#47b8d6">=</span> dependencies<span style="color:#47b8d6">.</span>create(<span
+            style="color:#ad9361">"de.hypoport:app-consumertests:${appVersion}"</span>) {
+    transitive <span style="color:#47b8d6">=</span> <span style="color:#de8e30;font-weight:700">false</span>
+  }
+  dependencies<span style="color:#47b8d6">.</span>add <span style="color:#ad9361">'consumertests'</span>, consumertestDep
+
+  def testRuntimeDep <span style="color:#47b8d6">=</span> dependencies<span style="color:#47b8d6">.</span>create(<span
+            style="color:#ad9361">"de.hypoport:app-consumertests:${appVersion}"</span>)
+  dependencies<span style="color:#47b8d6">.</span>add <span style="color:#ad9361">'testRuntime'</span>, testRuntimeDep
+}
+
+def consumertestsDirectory <span style="color:#47b8d6">=</span> <span style="color:#ad9361">"${buildDir}/consumertests"</span>
+
+task unzipConsumertests(<span style="color:#6782d3">type</span>: Copy) {
+  from {
+    zipTree(configurations<span style="color:#47b8d6">.</span>consumertests<span style="color:#47b8d6">.</span>singleFile)
+  }
+  into {
+    consumertestsDirectory
+  }
+}
+
+task consumertests(<span style="color:#6782d3">type</span>: Test) {
+  dependsOn unzipConsumertests
+  testClassesDir file(consumertestsDirectory)
+}</code>
+        </pre>
+    </div>
+</section>
+
+<section class="slide" id="docker-overview">
+    <div>
+        <h2>Docker</h2>
+
+        <ul>
+            <li>based on linux container (lxc) technology</li>
+            <li>builds images with os and app</li>
+            <li>no bootstrap needed compared to virtual machines</li>
+            <li>"portable" (depends on kernel 3.8+),
+                <a href="https://github.com/boot2docker/" target="_blank">boot2docker</a> for <a
+                        href="https://github.com/boot2docker/windows-installer" target="_blank">Windows</a>/<a
+                        href="https://github.com/boot2docker/boot2docker-cli" target="_blank">Mac</a></li>
+            <li>docker image may run in multiple containers on the same host<br/>↪ test stage setup becomes trivial</li>
+        </ul>
+    </div>
+</section>
+
+<section class="slide" id="docker-build">
+    <div>
+        <h2>Build Docker image</h2>
+        <pre>
+<code><span style="color:#65b042">"docker pull http://docker-registry/kreditsmart-base"</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker build -t kreditsmart --rm ."</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker tag kreditsmart http://docker-registry/kreditsmart:<span style="color:#daefa3">${version}</span>"</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker push http://docker-registry/kreditsmart"</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker rmi http://docker-registry/kreditsmart:<span style="color:#daefa3">${version}</span>"</span><span style="color:#e28964">.</span>execute()
+</code>
+        </pre>
+    </div>
+</section>
+
+<section class="slide" id="docker-images">
+    <div>
+        <h2>Multi layer images</h2>
+
+        <!-- pictures/docker-filesystems-multilayer.png from http://docs.docker.io/terms/images/docker-filesystems-multilayer.png (Apache 2.0) -->
+        <div><img src="pictures/docker-filesystems-multilayer.png" alt="" class="docker-filesystems-multilayer"/></div>
+    </div>
+    <style>
+        img.docker-filesystems-multilayer {
+            width: 85%;
+            margin-top: -25px;
+        }
+    </style>
+</section>
+
+<section class="slide" id="docker-deploy">
+    <div>
+        <h2>Deploy Docker image</h2>
+        <pre>
+<code><span style="color:#65b042">"docker -H tcp://app-server:4243 pull http://docker-registry/kreditsmart:<span style="color:#daefa3">${version}</span>"</span><span style="color:#e28964">.</span>execute()
+<span style="color:#99cf50">def</span> prevImageId <span style="color:#e28964">=</span> <span style="color:#65b042">"docker -H tcp://app-server:4243 inspect --format={{.Image}} kreditsmart-<span style="color:#daefa3">${selectedStage}</span>"</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker -H tcp://app-server:4243 stop kreditsmart-<span style="color:#daefa3">${selectedStage}</span>"</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker -H tcp://app-server:4243 rm kreditsmart-<span style="color:#daefa3">${selectedStage}</span>"</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker -H tcp://app-server:4243 rmi <span style="color:#daefa3">${prevImageId}</span>"</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"""\
+  docker -H tcp://app-server:4243 run -d --name=kreditsmart-<span style="color:#daefa3">${selectedStage}</span> \
+  -v /logs/<span style="color:#daefa3">${selectedStage}</span>:/opt/kreditsmart-backend/logs:rw -p <span style="color:#daefa3">${publicPortBackend}</span>:8090 \
+  -v /logs/<span style="color:#daefa3">${selectedStage}</span>:/opt/kreditsmart-frontend/logs:rw -p <span style="color:#daefa3">${publicPortFrontend}</span>:8080 \
+  <span style="color:#daefa3">${serverEnvironment.run_env}</span> http://docker-registry/kreditsmart:<span style="color:#daefa3">${version}</span> \
+"""</span><span style="color:#e28964">.</span>execute()
+[<span style="color:#65b042">"sh"</span>, <span style="color:#65b042">"-c"</span>, <span style="color:#65b042">"docker -H tcp://app-server:4243 images | grep none | awk '{print <span style="color:#ddf2a4">\$</span>3}' | xargs docker -H tcp://<span style="color:#daefa3">${hostname}</span> rmi"</span>]<span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker -H tcp://app-server:4243 ps"</span><span style="color:#e28964">.</span>execute()
+</code>
+        </pre>
+    </div>
+</section>
+
+<section class="slide" id="other-plugins">
+    <div>
+        <h2>Other helpful plugins</h2>
+
+        <div class="link-github">
+            <a href="https://github.com/bmuschko/gradle-cargo-plugin" target="_blank">bmuschko/gradle-cargo-plugin</a>
+        </div>
+        <br/>
+        <div class="link-github">
+            <a href="https://github.com/bmuschko/gradle-docker-plugin" target="_blank">bmuschko/gradle-docker-plugin</a>
+        </div>
+    </div>
+</section>
+
+<section class="slide" id="why-gradle">
+    <div>
+        <h2>Why Gradle?</h2>
+
+        <ul>
+            <li>less code is good code (loc: 18257 pom -> 3719 gradle)</li>
+            <li>easy integration of external tools w/o plugins</li>
+            <li>quick feedback or help from Gradle support/developers</li>
+            <li class="next">&hellip; well, it's Groovy! <img src="pictures/gradle-no-xml.jpg" alt="" class="gradle-no-xml"/></li>
+        </ul>
+    </div>
+    <style>
+        #why-gradle img.gradle-no-xml {
+            position: absolute;
+            bottom: 30px;
+            right: 250px;
+            z-index: 5;
+        }
+    </style>
+</section>
+
+<section class="slide shout" id="questions">
+    <div>
+        <h2>Questions!</h2>
+    </div>
+</section>
+
+<div class="progress">
+    <div></div>
+</div>
+<script src="shower/shower.min.js"></script>
+</body>
+</html>

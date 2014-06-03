@@ -1,0 +1,15 @@
+{
+  "name": "gradle-summit-2014",
+  "version": "0.0.1",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "inline": "node inline.js"
+  },
+  "dependencies": {
+    "compression": "^1.0.2",
+    "express": "^4.1.1",
+    "inliner": "^0.1.16"
+  }
+}
