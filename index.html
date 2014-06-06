@@ -516,13 +516,13 @@ task consumertests(<span style="color:#6782d3">type</span>: Test) {
         <h2>Docker</h2>
 
         <ul>
-            <li>based on linux container (lxc) technology</li>
+            <li>based on linux container (lxc) technology, no vm</li>
             <li>builds images with os and app</li>
-            <li>no bootstrap needed compared to virtual machines</li>
             <li>"portable" (depends on kernel 3.8+),
                 <a href="https://github.com/boot2docker/" target="_blank">boot2docker</a> for <a
                         href="https://github.com/boot2docker/windows-installer" target="_blank">Windows</a>/<a
                         href="https://github.com/boot2docker/boot2docker-cli" target="_blank">Mac</a></li>
+            <li>remote api, no SSH necessary</li>
             <li>docker image may run in multiple containers on the same host<br/>↪ test stage setup becomes trivial</li>
         </ul>
     </div>
