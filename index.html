@@ -531,12 +531,20 @@ task consumertests(<span style="color:#6782d3">type</span>: Test) {
 <section class="slide" id="docker-build">
     <div>
         <h2>Build Docker image</h2>
-        <pre>
+        <pre class="details" onclick="$('#docker-build .details, #docker-build .summary').toggle();">
 <code><span style="color:#65b042">"docker pull http://docker-registry/kreditsmart-base"</span><span style="color:#e28964">.</span>execute()
 <span style="color:#65b042">"docker build -t kreditsmart --rm ."</span><span style="color:#e28964">.</span>execute()
 <span style="color:#65b042">"docker tag kreditsmart http://docker-registry/kreditsmart:<span style="color:#daefa3">${version}</span>"</span><span style="color:#e28964">.</span>execute()
 <span style="color:#65b042">"docker push http://docker-registry/kreditsmart"</span><span style="color:#e28964">.</span>execute()
 <span style="color:#65b042">"docker rmi http://docker-registry/kreditsmart:<span style="color:#daefa3">${version}</span>"</span><span style="color:#e28964">.</span>execute()
+</code>
+        </pre>
+        <pre class="summary" onclick="$('#docker-build .details, #docker-build .summary').toggle();">
+<code><span style="color:#65b042">"docker pull baseimage"</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker build ."</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker tag image <span style="color:#daefa3">${version}</span>"</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker push image</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker rmi image"</span><span style="color:#e28964">.</span>execute()
 </code>
         </pre>
     </div>
@@ -560,7 +568,15 @@ task consumertests(<span style="color:#6782d3">type</span>: Test) {
 <section class="slide" id="docker-deploy">
     <div>
         <h2>Deploy Docker image</h2>
-        <pre>
+        <pre class="summary" onclick="$('#docker-deploy .details, #docker-deploy .summary').toggle();">
+<code><span style="color:#65b042">"docker -H tcp://app-server:4243 pull ..."</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker -H ... stop ..."</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker -H ... rm ..."</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker -H ... run -d ..."</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker -H ... ps"</span><span style="color:#e28964">.</span>execute()
+</code>
+        </pre>
+        <pre class="details" onclick="$('#docker-deploy .details, #docker-deploy .summary').toggle();">
 <code><span style="color:#65b042">"docker -H tcp://app-server:4243 pull http://docker-registry/kreditsmart:<span style="color:#daefa3">${version}</span>"</span><span style="color:#e28964">.</span>execute()
 <span style="color:#99cf50">def</span> prevImageId <span style="color:#e28964">=</span> <span style="color:#65b042">"docker -H tcp://app-server:4243 inspect --format={{.Image}} kreditsmart-<span style="color:#daefa3">${selectedStage}</span>"</span><span style="color:#e28964">.</span>execute()
 <span style="color:#65b042">"docker -H tcp://app-server:4243 stop kreditsmart-<span style="color:#daefa3">${selectedStage}</span>"</span><span style="color:#e28964">.</span>execute()
@@ -624,5 +640,6 @@ task consumertests(<span style="color:#6782d3">type</span>: Test) {
     <div></div>
 </div>
 <script src="shower/shower.min.js"></script>
+<script src="js/jquery-1.11.1.min.js"></script>
 </body>
 </html>
