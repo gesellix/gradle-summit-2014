@@ -216,11 +216,17 @@
         <h2>Dependency Management</h2>
 
         <div class="problem">Using transitive dependencies is possible in Maven due to compile scope propagation.
-            <div><img src="pictures/dependency-mgmt.png" alt="" class="transitive_deps"/></div>
+            <div><img src="pictures/dependency-inheritance.png" alt="" class="transitive_deps"/></div>
         </div>
         <div class="hint">Make your dependencies explicit! <p class="note">(it's generally better to know one's dependencies)</p>
         </div>
     </div>
+
+    <style>
+        img.transitive_deps {
+            height: 160px;;
+        }
+    </style>
 </section>
 
 <section class="slide" id="dependency-enforcement">
