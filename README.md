@@ -3,7 +3,7 @@
 [Presentation](http://gradlesummit.com/conference/santa_clara/2014/06/session?id=31615) for the 
 [Gradle Summit 2014](http://gradlesummit.com/conference/santa_clara/2014/06/home)
 
-Slides: [HTML](http://gesellix.github.io/gradle-summit-2014/), [(PDF)](https://speakerdeck.com/gesellix/from-maven-to-gradle-with-docker-in-a-multi-product-pipeline)
+Slides: [HTML](http://gesellix.github.io/gradle-summit-2014/), [PDF](https://speakerdeck.com/gesellix/from-maven-to-gradle-with-docker-in-a-multi-product-pipeline)
 
 ## Abstract
 
