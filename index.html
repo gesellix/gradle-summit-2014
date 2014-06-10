@@ -116,17 +116,9 @@
         <ol>
             <li>
                 Migrating a Maven multi-module project
-                <ul>
-                    <li>experiences and solutions</li>
-                    <li>current state</li>
-                </ul>
             </li>
             <li>
                 Using Gradle and Docker for continuous deployment
-                <ul>
-                    <li>Docker?!</li>
-                    <li>continuous deployment</li>
-                </ul>
             </li>
         </ol>
 
@@ -159,7 +151,7 @@
             <li>~ 300 Maven pom.xml files</li>
             <li>GWT frontends</li>
             <li>AngularJS frontend</li>
-            <li>mixed JUnit and TestNG usage</li>
+            <li>mixed JUnit/Spock and TestNG usage</li>
             <li>"incremental" build with own plugin</li>
             <li>some Maven specific hacks</li>
         </ul>
@@ -347,7 +339,6 @@ sourceSets<span style="color:#47b8d6">.</span>test<span style="color:#47b8d6">.<
 <code>task testng(<span style="color:#6782d3">type</span>: Test) {
     useTestNG()
 }
-test { }
 check<span style="color:#47b8d6">.</span>dependsOn testng
 
 task aggregateTestReports(<span style="color:#6782d3">type</span>: TestReport) {
@@ -400,9 +391,9 @@ tasks<span style="color:#47b8d6">.</span>withType(Test) {
         <h2>Current state</h2>
 
         <ul>
-            <li>long evaluation phase, but same build time like Maven</li>
+            <li>long evaluation phase, but same build time as Maven</li>
             <li>incremental build on single CI server<br/>↪ multiple agents with shared Gradle cache?</li>
-            <li>IDE support not on Maven level</li>
+            <li>IDE support not as good as for Maven</li>
             <li>most frequently asked question: <a href="#why-gradle">&quot;Why Gradle?&quot;</a></li>
             <li>Gradle tool of choice for new projects</li>
         </ul>
@@ -473,12 +464,12 @@ tasks<span style="color:#47b8d6">.</span>withType(Test) {
     </div>
 </section>
 
-<section class="slide" id="consumertests-dynamic-version">
+<section class="slide" id="contracttests-dynamic-version">
     <div>
         <h2>Dynamically resolved dependency</h2>
         <pre>
 <code>configurations {
-  consumertests
+    contracttests
 }
 
 afterEvaluate {
@@ -487,31 +478,31 @@ afterEvaluate {
             style="color:#ad9361">'version.txt'</span>)<span style="color:#47b8d6">.</span>text<span
             style="color:#47b8d6">.</span>trim()
 
-  def consumertestDep <span style="color:#47b8d6">=</span> dependencies<span style="color:#47b8d6">.</span>create(<span
-            style="color:#ad9361">"de.hypoport:app-consumertests:${appVersion}"</span>) {
+  def contracttestDep <span style="color:#47b8d6">=</span> dependencies<span style="color:#47b8d6">.</span>create(<span
+            style="color:#ad9361">"de.hypoport:app-contracttests:${appVersion}"</span>) {
     transitive <span style="color:#47b8d6">=</span> <span style="color:#de8e30;font-weight:700">false</span>
   }
-  dependencies<span style="color:#47b8d6">.</span>add <span style="color:#ad9361">'consumertests'</span>, consumertestDep
+  dependencies<span style="color:#47b8d6">.</span>add <span style="color:#ad9361">'contracttests'</span>, contracttestDep
 
   def testRuntimeDep <span style="color:#47b8d6">=</span> dependencies<span style="color:#47b8d6">.</span>create(<span
-            style="color:#ad9361">"de.hypoport:app-consumertests:${appVersion}"</span>)
+            style="color:#ad9361">"de.hypoport:app-contracttests:${appVersion}"</span>)
   dependencies<span style="color:#47b8d6">.</span>add <span style="color:#ad9361">'testRuntime'</span>, testRuntimeDep
 }
 
-def consumertestsDirectory <span style="color:#47b8d6">=</span> <span style="color:#ad9361">"${buildDir}/consumertests"</span>
+def contracttestsDirectory <span style="color:#47b8d6">=</span> <span style="color:#ad9361">"${buildDir}/contracttests"</span>
 
-task unzipConsumertests(<span style="color:#6782d3">type</span>: Copy) {
+task unzipContracttests(<span style="color:#6782d3">type</span>: Copy) {
   from {
-    zipTree(configurations<span style="color:#47b8d6">.</span>consumertests<span style="color:#47b8d6">.</span>singleFile)
+    zipTree(configurations<span style="color:#47b8d6">.</span>contracttests<span style="color:#47b8d6">.</span>singleFile)
   }
   into {
-    consumertestsDirectory
+    contracttestsDirectory
   }
 }
 
-task consumertests(<span style="color:#6782d3">type</span>: Test) {
-  dependsOn unzipConsumertests
-  testClassesDir file(consumertestsDirectory)
+task contracttests(<span style="color:#6782d3">type</span>: Test) {
+  dependsOn unzipContracttests
+  testClassesDir file(contracttestsDirectory)
 }</code>
         </pre>
     </div>
