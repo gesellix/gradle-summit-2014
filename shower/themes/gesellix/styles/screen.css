@@ -134,8 +134,8 @@ a {
     position: relative;
     width: 1024px;
     height: 640px;
-    background: #000;
-    color: #FFF;
+    background: #e3e5e7;
+    color: #000;
     -webkit-print-color-adjust: exact;
     -webkit-text-size-adjust: none;
     -moz-text-size-adjust: none;
@@ -350,7 +350,7 @@ a {
 }
 
 .slide.cover {
-    background: #000
+    background: #fff
 }
 
 .slide.cover img, .slide.cover svg, .slide.cover video, .slide.cover object, .slide.cover canvas, .slide.cover iframe {
@@ -604,7 +604,7 @@ a {
         margin: -320px 0 0 -512px;
         width: 1024px;
         height: 640px;
-        background: #000
+        background: #e3e5e7;
     }
 
     .full.debug:after {
@@ -708,7 +708,7 @@ p.text-shadow {
 
 .link-github {
     display: inline-block;
-    background-image: url('../images/github/PNG/GitHub-Mark-Light-32px.png');
+    background-image: url('../images/github/PNG/GitHub-Mark-32px.png');
     background-repeat: no-repeat;
     background-position: left;
     padding-left: 35px;
