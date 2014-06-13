@@ -270,7 +270,7 @@ a {
 .slide pre {
     overflow: hidden;
     height: 70%;
-    font-size: 80%;
+    font-size: 70%;
 }
 .slide pre:hover {
     overflow-y: scroll;
