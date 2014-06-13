@@ -560,7 +560,7 @@ task contracttests(<span style="color:#6782d3">type</span>: Test) {
     <div>
         <h2>Deploy Docker image</h2>
         <pre class="summary" onclick="$('#docker-deploy .details, #docker-deploy .summary').toggle();">
-<code><span style="color:#65b042">"docker -H tcp://app-server:4243 pull ..."</span><span style="color:#e28964">.</span>execute()
+<code><span style="color:#65b042">"docker -H tcp://app-server:2375 pull ..."</span><span style="color:#e28964">.</span>execute()
 <span style="color:#65b042">"docker -H ... stop ..."</span><span style="color:#e28964">.</span>execute()
 <span style="color:#65b042">"docker -H ... rm ..."</span><span style="color:#e28964">.</span>execute()
 <span style="color:#65b042">"docker -H ... run -d ..."</span><span style="color:#e28964">.</span>execute()
@@ -568,19 +568,19 @@ task contracttests(<span style="color:#6782d3">type</span>: Test) {
 </code>
         </pre>
         <pre class="details" onclick="$('#docker-deploy .details, #docker-deploy .summary').toggle();">
-<code><span style="color:#65b042">"docker -H tcp://app-server:4243 pull http://docker-registry/kreditsmart:<span style="color:#daefa3">${version}</span>"</span><span style="color:#e28964">.</span>execute()
-<span style="color:#99cf50">def</span> prevImageId <span style="color:#e28964">=</span> <span style="color:#65b042">"docker -H tcp://app-server:4243 inspect --format={{.Image}} kreditsmart-<span style="color:#daefa3">${selectedStage}</span>"</span><span style="color:#e28964">.</span>execute()
-<span style="color:#65b042">"docker -H tcp://app-server:4243 stop kreditsmart-<span style="color:#daefa3">${selectedStage}</span>"</span><span style="color:#e28964">.</span>execute()
-<span style="color:#65b042">"docker -H tcp://app-server:4243 rm kreditsmart-<span style="color:#daefa3">${selectedStage}</span>"</span><span style="color:#e28964">.</span>execute()
-<span style="color:#65b042">"docker -H tcp://app-server:4243 rmi <span style="color:#daefa3">${prevImageId}</span>"</span><span style="color:#e28964">.</span>execute()
+<code><span style="color:#65b042">"docker -H tcp://app-server:2375 pull http://docker-registry/kreditsmart:<span style="color:#daefa3">${version}</span>"</span><span style="color:#e28964">.</span>execute()
+<span style="color:#99cf50">def</span> prevImageId <span style="color:#e28964">=</span> <span style="color:#65b042">"docker -H tcp://app-server:2375 inspect --format={{.Image}} kreditsmart-<span style="color:#daefa3">${selectedStage}</span>"</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker -H tcp://app-server:2375 stop kreditsmart-<span style="color:#daefa3">${selectedStage}</span>"</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker -H tcp://app-server:2375 rm kreditsmart-<span style="color:#daefa3">${selectedStage}</span>"</span><span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker -H tcp://app-server:2375 rmi <span style="color:#daefa3">${prevImageId}</span>"</span><span style="color:#e28964">.</span>execute()
 <span style="color:#65b042">"""\
-  docker -H tcp://app-server:4243 run -d --name=kreditsmart-<span style="color:#daefa3">${selectedStage}</span> \
+  docker -H tcp://app-server:2375 run -d --name=kreditsmart-<span style="color:#daefa3">${selectedStage}</span> \
   -v /logs/<span style="color:#daefa3">${selectedStage}</span>:/opt/kreditsmart-backend/logs:rw -p <span style="color:#daefa3">${publicPortBackend}</span>:8090 \
   -v /logs/<span style="color:#daefa3">${selectedStage}</span>:/opt/kreditsmart-frontend/logs:rw -p <span style="color:#daefa3">${publicPortFrontend}</span>:8080 \
   <span style="color:#daefa3">${serverEnvironment.run_env}</span> http://docker-registry/kreditsmart:<span style="color:#daefa3">${version}</span> \
 """</span><span style="color:#e28964">.</span>execute()
-[<span style="color:#65b042">"sh"</span>, <span style="color:#65b042">"-c"</span>, <span style="color:#65b042">"docker -H tcp://app-server:4243 images | grep none | awk '{print <span style="color:#ddf2a4">\$</span>3}' | xargs docker -H tcp://<span style="color:#daefa3">${hostname}</span> rmi"</span>]<span style="color:#e28964">.</span>execute()
-<span style="color:#65b042">"docker -H tcp://app-server:4243 ps"</span><span style="color:#e28964">.</span>execute()
+[<span style="color:#65b042">"sh"</span>, <span style="color:#65b042">"-c"</span>, <span style="color:#65b042">"docker -H tcp://app-server:2375 images | grep none | awk '{print <span style="color:#ddf2a4">\$</span>3}' | xargs docker -H tcp://<span style="color:#daefa3">${hostname}</span> rmi"</span>]<span style="color:#e28964">.</span>execute()
+<span style="color:#65b042">"docker -H tcp://app-server:2375 ps"</span><span style="color:#e28964">.</span>execute()
 </code>
         </pre>
     </div>
